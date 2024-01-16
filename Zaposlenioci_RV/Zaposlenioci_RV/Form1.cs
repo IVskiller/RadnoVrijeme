@@ -19,38 +19,30 @@ namespace Zaposlenioci_RV {
             nasabaza = new DB();
             label1.Text = dateTimePicker2.Value.ToString("yyyy-MM-dd");
             Refreshliste();
-          
+            datumstart();
         }
 
-        public void Refreshliste() {
-            comboBoxfirme.Items.Clear();
 
-            List<string> firme = nasabaza.Select("select [ID_firme],[Naziv_firme] from Firme");
-            foreach (string firma in firme)
-            {
-                comboBoxfirme.Items.Add(firma);
-            }
-
-
-
-        }
 
         public class Zaposlenik {
-            int ID_zaposlenika;
-            string Ime;
-            string Prezimeime;
-            int ID_firme;
-            List <DateTime> zakašnjenja = new List<DateTime>();
-            List<DateTime> raniodlasci = new List<DateTime>();
+            public int ID_zaposlenika { get; private set; }
+            public string Ime { get; private set; }
+            public string Prezimeime { get; private set; }
+            public int ID_firme { get; private set; }
+            public int satitjedan { get; set; }
 
-            public Zaposlenik(int ID_zaposlenika,string Ime, string Prezimeime) {
-              this.ID_zaposlenika= ID_zaposlenika;
-                this.Ime= Ime;
-                this.Prezimeime= Prezimeime;
-                
+
+
+            public Zaposlenik(int ID_zaposlenika, string Ime, string Prezimeime) {
+                this.ID_zaposlenika = ID_zaposlenika;
+                this.Ime = Ime;
+                this.Prezimeime = Prezimeime;
+
+                this.satitjedan = 0;
+
             }
 
-            public Zaposlenik(int ID_zaposlenika, string Ime, string Prezimeime, int ID_firme){
+            public Zaposlenik(int ID_zaposlenika, string Ime, string Prezimeime, int ID_firme) {
                 this.ID_zaposlenika = ID_zaposlenika;
                 this.Ime = Ime;
                 this.Prezimeime = Prezimeime;
@@ -58,16 +50,28 @@ namespace Zaposlenioci_RV {
 
             }
 
+
+            public string vrativirjeme() {
+
+                int hours = satitjedan / 3600;
+                int minutes = (satitjedan % 3600) / 60;
+                int seconds = satitjedan % 60;
+
+                string outs = hours + ":" + minutes + ":" + seconds;
+                return outs;
+
+
+            }
+
+
+
         }
-
-      
-
 
         public class DB {
 
             private static DB instance;
             private SqlConnection connection;
-            public List<Zaposlenik> Zaposlenici = new List<Zaposlenik>(); 
+            public List<Zaposlenik> Zaposlenici = new List<Zaposlenik>();
 
             public DB()
             {
@@ -114,7 +118,7 @@ namespace Zaposlenioci_RV {
 
             public void Insert(string sql)
             {
-               
+
                 SqlDataReader reader;
                 SqlCommand komanda = new SqlCommand(sql, connection);
                 reader = komanda.ExecuteReader();
@@ -135,7 +139,7 @@ namespace Zaposlenioci_RV {
 
             public void Delete(string sql)
             {
-               
+
                 SqlDataReader reader;
                 SqlCommand komanda = new SqlCommand(sql, connection);
                 reader = komanda.ExecuteReader();
@@ -145,23 +149,60 @@ namespace Zaposlenioci_RV {
             public void zaposlenicirf()
             {
                 Zaposlenici.Clear();
-                List<string> zaptemp = Select("select [ID_prijave] from Prijave");
+                List<string> zaptemp = Select("select [ID_Zaposlenika] from Zaposlenici");
                 foreach (string zaposlenik in zaptemp) {
-                    int id =   Int32.Parse(zaposlenik.Substring(0, zaposlenik.IndexOf(" ")));
-                    string ime= Select("select ime from Zaposlenici WHERE ID_Zaposlenika=" + id).ElementAt(0);
+                    int id = Int32.Parse(zaposlenik.Substring(0, zaposlenik.IndexOf(" ")));
+                    string ime = Select("select ime from Zaposlenici WHERE ID_Zaposlenika=" + id).ElementAt(0);
                     string prezime = Select("select prezime from Zaposlenici WHERE ID_Zaposlenika=" + id).ElementAt(0);
-                    int firma = Int32.Parse(Select("select prezime from Zaposlenici WHERE ID_Zaposlenika=" + id).ElementAt(0));
-                    Zaposlenik z = new Zaposlenik(id,ime,prezime,firma);
+                    int firma = Int32.Parse(Select("select ID_firme from Zaposlenici WHERE ID_Zaposlenika=" + id).ElementAt(0));
+                    Zaposlenik z = new Zaposlenik(id, ime, prezime, firma);
                     Zaposlenici.Add(z);
                 }
 
             }
 
+        }
 
+        public void datumstart() {
+            
+            List<string> templista =nasabaza.Select("select Datum_prijave from prijave");
+            List<DateTime> dateTimes= new List<DateTime>();
+            foreach (string a in templista) {
+                dateTimes.Add(DateTime.Parse(a));
+            }
+            dateTimes.Sort();
+            label1.Text = dateTimes.ElementAt(templista.Count-1).Date.ToString("yyyy-MM-dd");
+            dateTimePicker2.Value = dateTimes.ElementAt(templista.Count - 1);
 
         }
 
+        public void Refreshliste() {
+            comboBoxfirme.Items.Clear();
 
+            List<string> firme = nasabaza.Select("select [ID_firme],[Naziv_firme] from Firme");
+            foreach (string firma in firme)
+            {
+                comboBoxfirme.Items.Add(firma);
+            }
+
+
+
+        }
+        public void tjsati()
+        {
+            foreach (Zaposlenik zaposlenik in nasabaza.Zaposlenici)
+            {
+                try
+                {
+                    DateTime pocetnorv = DateTime.Parse(nasabaza.Select("select vrijeme_prijave from prijave where ID_zaposlenika=" + zaposlenik.ID_zaposlenika + " AND  datum_prijave='" + getdatum() + "'  AND vrsta_prijave='Prijava'").ElementAt(0));      
+                    DateTime zavrsnovr = DateTime.Parse(nasabaza.Select("select vrijeme_prijave from prijave where ID_zaposlenika=" + zaposlenik.ID_zaposlenika + " AND  datum_prijave='" + getdatum() + "'  AND vrsta_prijave='Odjava'").ElementAt(0));
+                    TimeSpan timeDifference =   zavrsnovr - pocetnorv;
+
+                    zaposlenik.satitjedan += Int32.Parse(timeDifference.TotalSeconds.ToString());
+                }
+                catch { }
+            }
+        }
         public string getdatum() { if (debugToolStripMenuItem.Checked) return label1.Text;
             else
             {
@@ -179,8 +220,6 @@ namespace Zaposlenioci_RV {
         public string getzaposlenik() { return comboBoxZaposlenici.Text.Substring(0, comboBoxfirme.Text.IndexOf(" ")).ToString(); }
         public string getfirma() { return comboBoxfirme.Text.Substring(0, comboBoxfirme.Text.IndexOf(" ")).ToString(); }
 
-
-
         public bool subotach() {
             if (debugToolStripMenuItem.Checked)
             {
@@ -195,8 +234,6 @@ namespace Zaposlenioci_RV {
             }
 
         }
-
-
 
         public bool nedeljach()
         {
@@ -237,15 +274,12 @@ namespace Zaposlenioci_RV {
 
         }
 
-
         public string getrvfirme() {
 
             List<string> firmarv= nasabaza.Select("SELECT rv_zav_rano FROM Firme WHERE ID_firme="+ getfirma());
             return firmarv.ElementAt(0);
 
         }
-
-
 
         public int otvorenich()
         {
@@ -258,13 +292,6 @@ namespace Zaposlenioci_RV {
 
             return usporedba;
         }
-
-        
-
-
-
-
-
 
         private void comboBoxfirme_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -279,6 +306,28 @@ namespace Zaposlenioci_RV {
 
         private void button3_Click(object sender, EventArgs e)
         {
+            if (!subotach() && !nedeljach())
+            {
+          
+                try
+                {
+                    List<string> prijavljenich = nasabaza.Select("select [ID_prijave] from Prijave WHERE  ID_zaposlenika =" + getzaposlenik() + " AND Datum_prijave='" + getdatum() + "'   AND Vrsta_prijave='Prijava'");
+                    List<string> odjavljenich = nasabaza.Select("select [ID_prijave] from Prijave WHERE  ID_zaposlenika =" + getzaposlenik() + " AND Datum_prijave='" + getdatum() + "'   AND Vrsta_prijave='Odjava'");
+                    if (odjavljenich.Count == 0 && prijavljenich.Count == 1)
+                    {
+                        nasabaza.Insert("INSERT INTO [dbo].[Prijave] ([ID_Zaposlenika],[Datum_prijave],[Vrijeme_prijave],[Vrsta_prijave]) VALUES (" + getzaposlenik() + ",'" + getdatum() + "','" + getrvfirme() + "' ,'Odjava');");
+                    }
+
+                }
+                catch { }
+                tjsati();
+
+            }
+
+
+
+
+
             dateTimePicker2.Value = dateTimePicker2.Value.AddDays(1);
             label1.Text = dateTimePicker2.Value.ToString("yyyy-MM-dd");
 
@@ -288,6 +337,16 @@ namespace Zaposlenioci_RV {
                 label2.Text = "Subota";
                 zaposlenici_kasne();
                 zaposlenici_raniodlazak();
+
+                foreach (Zaposlenik zaposlenik in nasabaza.Zaposlenici) {
+                    if (zaposlenik.satitjedan < 144.000) {
+                        listBox2.Items.Add(zaposlenik.ID_zaposlenika + " " + zaposlenik.Ime + " " + zaposlenik.Prezimeime);
+                    
+                    }
+
+                }
+
+
                 comboBoxfirme.Visible = false;
                 comboBoxZaposlenici.Visible = false;
                 button1.Visible = false;
@@ -300,23 +359,17 @@ namespace Zaposlenioci_RV {
                 label2.Text = "Nedelja";
 
             }
-            else
-            {
-                label2.Text = "Radni dan";
-                comboBoxfirme.Visible = true;
-                comboBoxZaposlenici.Visible = true;
-                button1.Visible = true;
-                button2.Visible = true;
-                label3.Visible = true;
-
-
-                List<string> prijavljenich = nasabaza.Select("select [ID_prijave] from Prijave WHERE  ID_zaposlenika =" + getzaposlenik() + " AND Datum_prijave='" + getdatum() + "'   AND Vrsta_prijave='Odjava'");
-                if (prijavljenich.Count == 0)
-                {
-                    nasabaza.Insert("INSERT INTO [dbo].[Prijave] ([ID_Zaposlenika],[Datum_prijave],[Vrijeme_prijave],[Vrsta_prijave]) VALUES (" + getzaposlenik() + ",'" + getdatum() + "','" + getrvfirme() + "' ,'Odjava');");
+            else {
+                
+                
+                    label2.Text = "Radni dan";
+                    comboBoxfirme.Visible = true;
+                    comboBoxZaposlenici.Visible = true;
+                    button1.Visible = true;
+                    button2.Visible = false;
+                    label3.Visible = true;
                 }
-
-            }
+           
 
             nasabaza.zaposlenicirf();
             comboBoxfirme.ResetText();
@@ -350,11 +403,6 @@ namespace Zaposlenioci_RV {
 
         }
 
-        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void button2_Click(object sender, EventArgs e)
         {
             try
@@ -368,7 +416,7 @@ namespace Zaposlenioci_RV {
 
         private void comboBoxZaposlenici_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            button2.Visible = false;
             List<string> prijavljenich = nasabaza.Select("select [ID_prijave] from Prijave WHERE  ID_zaposlenika =" + getzaposlenik() + " AND Datum_prijave='" + getdatum() + "'");
             if (prijavljenich.Count == 0)
             {
@@ -402,8 +450,14 @@ namespace Zaposlenioci_RV {
 
         }
 
-       
+        private void tOPListaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            List<Zaposlenik> templista = nasabaza.Zaposlenici.OrderBy(p => p.satitjedan).ToList();
+            foreach (Zaposlenik zaposlenik in templista) {
+                listBox3.Items.Add(zaposlenik.vrativirjeme());
+            }
+            
+        }
     }
 
 }
-    

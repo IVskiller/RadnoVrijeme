@@ -42,6 +42,9 @@ namespace Zaposlenioci_RV {
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listBox2 = new System.Windows.Forms.ListBox();
+            this.listBox3 = new System.Windows.Forms.ListBox();
+            this.opcijeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tOPListaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -87,7 +90,7 @@ namespace Zaposlenioci_RV {
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(696, 415);
+            this.button3.Location = new System.Drawing.Point(713, 415);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 4;
@@ -99,18 +102,18 @@ namespace Zaposlenioci_RV {
             // 
             this.dateTimePicker1.CustomFormat = "";
             this.dateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.Time;
-            this.dateTimePicker1.Location = new System.Drawing.Point(606, 415);
+            this.dateTimePicker1.Location = new System.Drawing.Point(623, 415);
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.ShowUpDown = true;
             this.dateTimePicker1.Size = new System.Drawing.Size(67, 23);
             this.dateTimePicker1.TabIndex = 6;
-            this.dateTimePicker1.Value = new System.DateTime(2024, 1, 11, 19, 35, 0, 0);
+            this.dateTimePicker1.Value = new System.DateTime(2024, 1, 11, 7, 35, 0, 0);
             // 
             // dateTimePicker2
             // 
             this.dateTimePicker2.Checked = false;
             this.dateTimePicker2.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dateTimePicker2.Location = new System.Drawing.Point(245, 413);
+            this.dateTimePicker2.Location = new System.Drawing.Point(12, 413);
             this.dateTimePicker2.Name = "dateTimePicker2";
             this.dateTimePicker2.Size = new System.Drawing.Size(148, 23);
             this.dateTimePicker2.TabIndex = 7;
@@ -119,7 +122,7 @@ namespace Zaposlenioci_RV {
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(459, 421);
+            this.label1.Location = new System.Drawing.Point(521, 419);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(38, 15);
             this.label1.TabIndex = 8;
@@ -128,34 +131,33 @@ namespace Zaposlenioci_RV {
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(459, 390);
+            this.label2.Location = new System.Drawing.Point(30, 183);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(38, 15);
+            this.label2.Size = new System.Drawing.Size(0, 15);
             this.label2.TabIndex = 10;
-            this.label2.Text = "label2";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(30, 167);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(38, 15);
+            this.label3.Size = new System.Drawing.Size(0, 15);
             this.label3.TabIndex = 11;
-            this.label3.Text = "label3";
             // 
             // listBox1
             // 
             this.listBox1.FormattingEnabled = true;
             this.listBox1.ItemHeight = 15;
-            this.listBox1.Location = new System.Drawing.Point(489, 39);
+            this.listBox1.Location = new System.Drawing.Point(504, 39);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(299, 304);
+            this.listBox1.Size = new System.Drawing.Size(284, 304);
             this.listBox1.TabIndex = 12;
             // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.settingsToolStripMenuItem});
+            this.settingsToolStripMenuItem,
+            this.opcijeToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(800, 24);
@@ -167,8 +169,8 @@ namespace Zaposlenioci_RV {
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.debugToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.settingsToolStripMenuItem.Text = "Settings";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(66, 20);
+            this.settingsToolStripMenuItem.Text = "Postavke";
             // 
             // debugToolStripMenuItem
             // 
@@ -183,16 +185,41 @@ namespace Zaposlenioci_RV {
             // 
             this.listBox2.FormattingEnabled = true;
             this.listBox2.ItemHeight = 15;
-            this.listBox2.Location = new System.Drawing.Point(314, 39);
+            this.listBox2.Location = new System.Drawing.Point(329, 39);
             this.listBox2.Name = "listBox2";
-            this.listBox2.Size = new System.Drawing.Size(169, 304);
+            this.listBox2.Size = new System.Drawing.Size(169, 169);
             this.listBox2.TabIndex = 14;
+            // 
+            // listBox3
+            // 
+            this.listBox3.FormattingEnabled = true;
+            this.listBox3.ItemHeight = 15;
+            this.listBox3.Location = new System.Drawing.Point(329, 227);
+            this.listBox3.Name = "listBox3";
+            this.listBox3.Size = new System.Drawing.Size(169, 214);
+            this.listBox3.TabIndex = 15;
+            // 
+            // opcijeToolStripMenuItem
+            // 
+            this.opcijeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tOPListaToolStripMenuItem});
+            this.opcijeToolStripMenuItem.Name = "opcijeToolStripMenuItem";
+            this.opcijeToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
+            this.opcijeToolStripMenuItem.Text = "Opcije";
+            // 
+            // tOPListaToolStripMenuItem
+            // 
+            this.tOPListaToolStripMenuItem.Name = "tOPListaToolStripMenuItem";
+            this.tOPListaToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.tOPListaToolStripMenuItem.Text = "TOP lista";
+            this.tOPListaToolStripMenuItem.Click += new System.EventHandler(this.tOPListaToolStripMenuItem_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.listBox3);
             this.Controls.Add(this.listBox2);
             this.Controls.Add(this.listBox1);
             this.Controls.Add(this.label3);
@@ -233,6 +260,9 @@ namespace Zaposlenioci_RV {
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem debugToolStripMenuItem;
         private System.Windows.Forms.ListBox listBox2;
+        private System.Windows.Forms.ListBox listBox3;
+        private System.Windows.Forms.ToolStripMenuItem opcijeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tOPListaToolStripMenuItem;
     }
 }
 
