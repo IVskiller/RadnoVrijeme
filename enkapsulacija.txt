@@ -1,0 +1,110 @@
+U C#, enkapsulacija se postiže korištenjem pristupnih modificirajućih 
+riječi kao što su public, private, protected, internal, protected internal.
+
+Korištenjem private modificirajuće riječi možete ograničiti pristup članovima samo unutar same klase.
+Korištenjem protected modificirajuće riječi možete omogućiti pristup članovima izvedenih klasa (podklasa).
+Metode s public pristupom su dostupne izvan klase.
+Korištenje specifičnih metoda za postavljanje i dohvaćanje vrijednosti članova klase.
+Definiranje zajedničkog sučelja koje klase implementiraju, čime se omogućava enkapsulacija implementacije.
+
+1.
+class Osoba
+{
+    private string ime;
+
+    public void PostaviIme(string novoIme)
+    {
+        ime = novoIme;
+    }
+
+    public string DohvatiIme()
+    {
+        return ime;
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Osoba osoba = new Osoba();
+        osoba.PostaviIme("Ana");
+        Console.WriteLine(osoba.DohvatiIme());
+    }
+}
+
+
+
+2.
+class Zivotinja
+{
+    protected string vrsta;
+
+    public Zivotinja(string vrsta)
+    {
+        this.vrsta = vrsta;
+    }
+}
+
+class Ptica : Zivotinja
+{
+    public string Krila { get; set; }
+
+    public Ptica(string vrsta, string krila) : base(vrsta)
+    {
+        Krila = krila;
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Ptica orao = new Ptica("Orao", "Velika");
+        Console.WriteLine(orao.vrsta);  // vrsta je zaštićena i dostupna izvedenoj klasi
+    }
+}
+
+
+
+3.
+class Racun
+{
+    public decimal Saldo { get; private set; }
+
+    public Racun(decimal saldo)
+    {
+        Saldo = saldo;
+    }
+
+    public void Uplata(decimal iznos)
+    {
+        Saldo += iznos;
+    }
+
+    public void Isplata(decimal iznos)
+    {
+        if (iznos <= Saldo)
+        {
+            Saldo -= iznos;
+        }
+        else
+        {
+            Console.WriteLine("Nedovoljno sredstava.");
+        }
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Racun racun = new Racun(1000);
+        racun.Uplata(500);
+        racun.Isplata(200);
+    }
+}
+
+
+
+4.
