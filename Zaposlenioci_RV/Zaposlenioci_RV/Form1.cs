@@ -16,10 +16,13 @@ namespace Zaposlenioci_RV {
         public Form1()
         {
             InitializeComponent();
-            nasabaza = new DB();
+            nasabaza = DB.Instance;
             label1.Text = dateTimePicker2.Value.ToString("yyyy-MM-dd");
             Refreshliste();
             datumstart();
+            nasabaza.zaposlenicirf();
+
+
         }
 
 
@@ -29,25 +32,18 @@ namespace Zaposlenioci_RV {
             public string Ime { get; private set; }
             public string Prezimeime { get; private set; }
             public int ID_firme { get; private set; }
-            public int satitjedan { get; set; }
+            public int satitjedan;
 
+            
 
-
-            public Zaposlenik(int ID_zaposlenika, string Ime, string Prezimeime) {
-                this.ID_zaposlenika = ID_zaposlenika;
-                this.Ime = Ime;
-                this.Prezimeime = Prezimeime;
-
-                this.satitjedan = 0;
-
-            }
+          
 
             public Zaposlenik(int ID_zaposlenika, string Ime, string Prezimeime, int ID_firme) {
                 this.ID_zaposlenika = ID_zaposlenika;
                 this.Ime = Ime;
                 this.Prezimeime = Prezimeime;
                 this.ID_firme = ID_firme;
-
+               
             }
 
 
@@ -68,18 +64,17 @@ namespace Zaposlenioci_RV {
         }
 
         public class DB {
-
             private static DB instance;
             private SqlConnection connection;
-            public List<Zaposlenik> Zaposlenici = new List<Zaposlenik>();
+            public List<Zaposlenik> Zaposlenici { get; private set; }
 
-            public DB()
+            private DB()
             {
                 string conn_string = @"Server=localhost\SQLEXPRESS;Database=pracenjeradjnogvremena;Trusted_Connection=True;User Id=Ivort;Password=sqlknjiznica";
                 connection = new SqlConnection(conn_string);
                 connection.Open();
+                Zaposlenici = new List<Zaposlenik>();
             }
-
 
             public static DB Instance
             {
@@ -198,7 +193,8 @@ namespace Zaposlenioci_RV {
                     DateTime zavrsnovr = DateTime.Parse(nasabaza.Select("select vrijeme_prijave from prijave where ID_zaposlenika=" + zaposlenik.ID_zaposlenika + " AND  datum_prijave='" + getdatum() + "'  AND vrsta_prijave='Odjava'").ElementAt(0));
                     TimeSpan timeDifference =   zavrsnovr - pocetnorv;
 
-                    zaposlenik.satitjedan += Int32.Parse(timeDifference.TotalSeconds.ToString());
+                    int razlika= Convert.ToInt32(timeDifference.TotalSeconds.ToString());
+                    zaposlenik.satitjedan += razlika;
                 }
                 catch { }
             }
@@ -371,7 +367,7 @@ namespace Zaposlenioci_RV {
                 }
            
 
-            nasabaza.zaposlenicirf();
+            
             comboBoxfirme.ResetText();
             comboBoxZaposlenici.ResetText();
 
@@ -452,7 +448,8 @@ namespace Zaposlenioci_RV {
 
         private void tOPListaToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            List<Zaposlenik> templista = nasabaza.Zaposlenici.OrderBy(p => p.satitjedan).ToList();
+            List<Zaposlenik> templista = nasabaza.Zaposlenici.OrderByDescending(p => p.satitjedan).ToList();
+            listBox3.Items.Clear();
             foreach (Zaposlenik zaposlenik in templista) {
                 listBox3.Items.Add(zaposlenik.vrativirjeme());
             }
